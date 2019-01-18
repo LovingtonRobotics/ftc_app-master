@@ -29,12 +29,21 @@
 
 package org.firstinspires.ftc.teamcode;
 
+import android.app.Activity;
+import android.graphics.Color;
+import android.view.View;
+
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.ColorSensor;
+import com.qualcomm.robotcore.hardware.DistanceSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.ElapsedTime;
+import com.qualcomm.robotcore.hardware.CRServo;
 
+import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
+
+import java.util.Locale;
 
 
 /**
@@ -64,7 +73,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
  * Remove or comment out the @Disabled line to add this opmode to the Driver Station OpMode list
  */
 
-@Autonomous(name="CraterSideAutonomouswithDropV2", group="Pushbot")
+@Autonomous(name="CraterSideAutonomouswithColorSensor", group="Pushbot")
 public class CraterSideAutonomousWithColorSensor extends LinearOpMode {
     HardwarePushbot robot = new HardwarePushbot();
 
@@ -80,13 +89,22 @@ public class CraterSideAutonomousWithColorSensor extends LinearOpMode {
     static final double     TURN_SPEED              = 0.5;
     static final double     ARM_SPEED               = 0.5;
 
-    ColorSensor Color_sensor;
+    float hsvValues[] = {0F, 0F, 0F};
+
+    final float values[] = hsvValues;
+
+    final double SCALE_FACTOR =255;
+
+    int relativeLayoutId = hardwareMap.appContext.getResources().getIdentifier("RelativeLayour", "id", hardwareMap.appContext.getPackageName());
+
+    final View relativeLayout = ((Activity) hardwareMap.appContext).findViewById(relativeLayoutId);
+
+
 
 
 
     @Override
     public void runOpMode() throws InterruptedException {
-
 
 
         /*
@@ -96,9 +114,6 @@ public class CraterSideAutonomousWithColorSensor extends LinearOpMode {
         robot.init(hardwareMap);
 
 
-        //Color Sensor
-        Color_sensor = hardwareMap.colorSensor.get("color");
-
 
         //initialize the servos
 
@@ -106,7 +121,6 @@ public class CraterSideAutonomousWithColorSensor extends LinearOpMode {
         robot.Robot_Release.setPosition(0.5);
         robot.Robot_Open.setPosition(0);
         robot.Scoop_Servo.setPosition(0);
-
 
 
         // Send telemetry message to signify robot waiting;
@@ -126,17 +140,50 @@ public class CraterSideAutonomousWithColorSensor extends LinearOpMode {
 
 
         // Send telemetry message to indicate successful Encoder reset
-        telemetry.addData("Path0",  "Starting at %7d :%7d",
-                          robot.Left_Wheel.getCurrentPosition(),
-                          robot.Right_Wheel.getCurrentPosition());
-                          robot.Arm_Extend.getCurrentPosition();
-                          robot.Arm_Raise.getCurrentPosition();
+        telemetry.addData("Path0", "Starting at %7d :%7d",
+                robot.Left_Wheel.getCurrentPosition(),
+                robot.Right_Wheel.getCurrentPosition());
+        robot.Arm_Extend.getCurrentPosition();
+        robot.Arm_Raise.getCurrentPosition();
         telemetry.update();
-
 
 
         // Wait for the game to start (driver presses PLAY)
         waitForStart();
+        while (opModeIsActive()) {
+            // Color Sensor Stuff------------------------------------------------------------------------
+            Color.RGBToHSV((int) (robot.Color_Sensor.red() * SCALE_FACTOR),
+                    (int) (robot.Color_Sensor.green() * SCALE_FACTOR),
+                    (int) (robot.Color_Sensor.blue() * SCALE_FACTOR),
+                    hsvValues);
+            telemetry.addData("Distance (cm)",
+                    String.format(Locale.US, "%.02f", robot.Distance_Sensor.getDistance(DistanceUnit.CM)));
+            telemetry.addData("Alpha", robot.Color_Sensor.alpha());
+            telemetry.addData("Red  ", robot.Color_Sensor.red());
+            telemetry.addData("Green", robot.Color_Sensor.green());
+            telemetry.addData("Blue ", robot.Color_Sensor.blue());
+            telemetry.addData("Hue", hsvValues[0]);
+
+            relativeLayout.post(new Runnable() {
+                public void run() {
+                    relativeLayout.setBackgroundColor(Color.HSVToColor(0xff, values));
+                }
+            });
+
+            telemetry.update();
+        }
+
+        // Set the panel back to the default color
+        relativeLayout.post(new Runnable() {
+            public void run() {
+                relativeLayout.setBackgroundColor(Color.WHITE);
+            }
+        });
+
+
+        //---------------------------------Actual Code Goes Below-----------------------------------
+        robot.Scoop_Spin_Left.setPower(1);
+
 
         // Step through each leg of the path,
         // Note: Reverse movement is obtained by setting a negative distance (not speed)
@@ -152,11 +199,9 @@ public class CraterSideAutonomousWithColorSensor extends LinearOpMode {
         encoderDrive(DRIVE_SPEED,  15,  15, 10.0);
         */
         //ColorSensor
-        while (Color_sensor.red() < 200 && Color_sensor.green() < 200 && Color_sensor.blue() <100){
-            robot.Left_Wheel.setPower(.2);
-            robot.Right_Wheel.setPower(.2);
-        }
-        encoderDrive(DRIVE_SPEED, -2, 2, 3);
+
+
+        //encoderDrive(DRIVE_SPEED, -2, 2, 3);
         /*
         encoderDrive(DRIVE_SPEED,  -12,  -12, 10.0);
         encoderDrive(DRIVE_SPEED,  -12,  12, 10.0);
@@ -168,20 +213,16 @@ public class CraterSideAutonomousWithColorSensor extends LinearOpMode {
         robot.Scoop_Servo.setPosition(0);
         */
 
-        sleep(1000);     // pause for servos to move
 
-        telemetry.addData("Path", "Complete");
-        telemetry.update();
+        /*
+         *  Method to perfmorm a relative move, based on encoder counts.
+         *  Encoders are not reset as the move is based on the current position.
+         *  Move will stop if any of three conditions occur:
+         *  1) Move gets to the desired position
+         *  2) Move runs out of time
+         *  3) Driver stops the opmode running.
+         */
     }
-
-    /*
-     *  Method to perfmorm a relative move, based on encoder counts.
-     *  Encoders are not reset as the move is based on the current position.
-     *  Move will stop if any of three conditions occur:
-     *  1) Move gets to the desired position
-     *  2) Move runs out of time
-     *  3) Driver stops the opmode running.
-     */
     public void encoderDrive(double speed,
                              double leftInches, double rightInches,
                              double timeoutS) {
