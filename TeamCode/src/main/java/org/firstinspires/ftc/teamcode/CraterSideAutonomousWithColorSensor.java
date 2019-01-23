@@ -94,11 +94,27 @@ public class CraterSideAutonomousWithColorSensor extends LinearOpMode {
     static final double     TURN_SPEED              = 0.5;
     static final double     ARM_SPEED               = 0.5;
 
-    int Blue = Color_Sensor.blue();
-    int Red = Color_Sensor.red();
-    int Green = Color_Sensor.green();
+    //int Blue = Color_Sensor.blue();
+    //int Red = Color_Sensor.red();
+    //int Green = Color_Sensor.green();
 
-    double distance = Distance_Sensor.getDistance(DistanceUnit.CM);
+
+
+    // hsvValues is an array that will hold the hue, saturation, and value information.
+    float hsvValues[] = {0F, 0F, 0F};
+
+    // values is a reference to the hsvValues array.
+    final float values[] = hsvValues;
+
+    // sometimes it helps to multiply the raw RGB values with a scale factor
+    // to amplify/attentuate the measured values.
+    final double SCALE_FACTOR = 255;
+
+    // get a reference to the RelativeLayout so we can change the background
+    // color of the Robot Controller app to match the hue detected by the RGB sensor.
+    int relativeLayoutId = hardwareMap.appContext.getResources().getIdentifier("RelativeLayout", "id", hardwareMap.appContext.getPackageName());
+    final View relativeLayout = ((Activity) hardwareMap.appContext).findViewById(relativeLayoutId);
+
 
 
     @Override
@@ -110,7 +126,6 @@ public class CraterSideAutonomousWithColorSensor extends LinearOpMode {
          * The init() method of the hardware class does all the work here
          */
         robot.init(hardwareMap);
-
 
 
         //initialize the servos
@@ -151,20 +166,6 @@ public class CraterSideAutonomousWithColorSensor extends LinearOpMode {
         // get a reference to the distance sensor that shares the same name.
         Distance_Sensor = hardwareMap.get(DistanceSensor.class, "sensor_color_distance");
 
-        // hsvValues is an array that will hold the hue, saturation, and value information.
-        float hsvValues[] = {0F, 0F, 0F};
-
-        // values is a reference to the hsvValues array.
-        final float values[] = hsvValues;
-
-        // sometimes it helps to multiply the raw RGB values with a scale factor
-        // to amplify/attentuate the measured values.
-        final double SCALE_FACTOR = 255;
-
-        // get a reference to the RelativeLayout so we can change the background
-        // color of the Robot Controller app to match the hue detected by the RGB sensor.
-        int relativeLayoutId = hardwareMap.appContext.getResources().getIdentifier("RelativeLayout", "id", hardwareMap.appContext.getPackageName());
-        final View relativeLayout = ((Activity) hardwareMap.appContext).findViewById(relativeLayoutId);
 
         // Wait for the game to start (driver presses PLAY)
         waitForStart();
@@ -210,17 +211,15 @@ public class CraterSideAutonomousWithColorSensor extends LinearOpMode {
         // End of Color Sensor Stuff----------------------------------------------------------------
 
         // Actual Code that drives the robot starts here -------------------------------------------
-        sleep(2000);{
-        if (Red >250 && Blue > 250 && distance <10){
-            encoderDrive(1.0,5,5,15);
+        sleep(2000);
+
+        if (Color_Sensor.red() > 250 && Color_Sensor.blue() > 250 && Distance_Sensor.getDistance(DistanceUnit.CM) < 10) {
+            encoderDrive(1.0, 5, 5, 15);
+            stop();
         }
 
 
         //encoderDrive(1, 6, 6, 10);
-        stop();
-        }
-    }
-
 
 
         // Step through each leg of the path,
@@ -260,7 +259,7 @@ public class CraterSideAutonomousWithColorSensor extends LinearOpMode {
          *  2) Move runs out of time
          *  3) Driver stops the opmode running.
          */
-
+    }
     public void encoderDrive(double speed,
                              double leftInches, double rightInches,
                              double timeoutS) {
