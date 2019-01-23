@@ -33,6 +33,9 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
+import com.qualcomm.robotcore.hardware.CRServo;
+import com.qualcomm.robotcore.hardware.ColorSensor;
+import com.qualcomm.robotcore.hardware.DistanceSensor;
 
 /**
  * This is NOT an opmode.
@@ -57,10 +60,15 @@ public class HardwarePushbot
     public DcMotor  Right_Wheel  = null;
     public DcMotor  Arm_Extend     = null;
     public DcMotor  Arm_Raise      = null;
+
     public Servo    Robot_Release   = null;
     public Servo  Robot_Open  = null;
     public Servo  Scoop_Servo  = null;
     public Servo  Robot_Latch = null;
+
+    public CRServo Scoop_Spin_Left = null;
+    public CRServo Scoop_Spin_Right = null;
+
 
     public static final double MID_SERVO       =  0.5 ;
     public static final double ARM_UP_POWER    =  0.45 ;
@@ -109,6 +117,12 @@ public class HardwarePushbot
         Robot_Open  = hwMap.get(Servo.class, "Robot_Open");
         Scoop_Servo  = hwMap.get(Servo.class, "Scoop_Servo");
         Robot_Latch  = hwMap.get(Servo.class, "Robot_Latch");
+
+        // Define and intialize Two CR Servos
+        Scoop_Spin_Left = hwMap.get(CRServo.class, "Left_Side_Scoop");
+        Scoop_Spin_Right = hwMap.get(CRServo.class, "Right_Side_Scoop");
+
+
 
 
 
