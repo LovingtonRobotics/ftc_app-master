@@ -29,19 +29,14 @@
 
 package org.firstinspires.ftc.teamcode;
 
-import android.app.Activity;
 import android.graphics.Color;
-import android.view.View;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-
-import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DistanceSensor;
 import com.qualcomm.robotcore.util.ElapsedTime;
-
 
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 
@@ -75,8 +70,8 @@ import java.util.Locale;
  * Remove or comment out the @Disabled line to add this opmode to the Driver Station OpMode list
  */
 
-@Autonomous(name="CraterSideAutonomouswithColorSensor", group="Pushbot")
-public class CraterSideAutonomousWithColorSensor extends LinearOpMode {
+@Autonomous(name="MarkerSideAutonomousColorSensor", group="Pushbot")
+public class MarkerSideAutonomousWithColorSensor extends LinearOpMode {
     HardwarePushbot robot = new HardwarePushbot();
 
     public ColorSensor Color_Sensor;
@@ -168,7 +163,7 @@ public class CraterSideAutonomousWithColorSensor extends LinearOpMode {
             // convert the RGB values to HSV values.
             // multiply by the SCALE_FACTOR.
             // then cast it back to int (SCALE_FACTOR is a double)
-
+            int step = 0;
             Color.RGBToHSV((int) (Color_Sensor.red() * SCALE_FACTOR),
                     (int) (Color_Sensor.green() * SCALE_FACTOR),
                     (int) (Color_Sensor.blue() * SCALE_FACTOR),
@@ -185,7 +180,6 @@ public class CraterSideAutonomousWithColorSensor extends LinearOpMode {
 
 
             telemetry.update();
-            int step = 0;
 
             switch (step) {
                 case 0:
@@ -219,23 +213,23 @@ public class CraterSideAutonomousWithColorSensor extends LinearOpMode {
                     break;
                 case 3:
                     //
-                    // drive away form lander
+                    // Drive away from the lander
                     //
-                    encoderDrive(1,20,20,15);
+                    encoderDrive(1,17,17,15);
                     step ++;
                     break;
                 case 4:
                     //
-                    //turn left for block reading positioning
+                    //turn to prepare positioning for blocks
                     //
                     encoderDrive(1,-5,5,15);
                     step ++;
                     break;
                 case 5:
                     //
-                    // drive backwards positioning for block reading
+                    // set into position for block reading
                     //
-                    encoderDrive(1,-25,-25,15);
+                    encoderDrive(1,-27,-27,15);
 
                     step ++;
                     break;
@@ -244,7 +238,7 @@ public class CraterSideAutonomousWithColorSensor extends LinearOpMode {
                     //
                     // read blocks
                     //
-                    encoderDrive(1,70,70,15);
+                    encoderDrive(1,67,67,15);
 
                     step ++;
                     break;
@@ -252,15 +246,15 @@ public class CraterSideAutonomousWithColorSensor extends LinearOpMode {
                     //
                     // turn left towards marker area
                     //
-                    encoderDrive(1,-5,5,15);
+                    encoderDrive(1,10,-10,15);
 
                     step ++;
                     break;
                 case 8:
                     //
-                    // Drive into marker area
+                    // Drive into the marker area
                     //
-                    encoderDrive(1,61,61,15);
+                    encoderDrive(1,60,60,15);
 
                     step ++;
                     break;
@@ -278,11 +272,9 @@ public class CraterSideAutonomousWithColorSensor extends LinearOpMode {
                     //
                     // back out of marker spot
                     //
-                    encoderDrive(1,-18,-18,15);
+                    encoderDrive(1,-24,-24,15);
 
                     step ++;
-
-
                     break;
 
                     

@@ -29,19 +29,14 @@
 
 package org.firstinspires.ftc.teamcode;
 
-import android.app.Activity;
 import android.graphics.Color;
-import android.view.View;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-
-import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DistanceSensor;
 import com.qualcomm.robotcore.util.ElapsedTime;
-
 
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 
@@ -75,8 +70,8 @@ import java.util.Locale;
  * Remove or comment out the @Disabled line to add this opmode to the Driver Station OpMode list
  */
 
-@Autonomous(name="CraterSideAutonomouswithColorSensor", group="Pushbot")
-public class CraterSideAutonomousWithColorSensor extends LinearOpMode {
+@Autonomous(name="CraterSideAutonomous", group="Pushbot")
+public class CraterSideAutonomous extends LinearOpMode {
     HardwarePushbot robot = new HardwarePushbot();
 
     public ColorSensor Color_Sensor;
@@ -86,7 +81,7 @@ public class CraterSideAutonomousWithColorSensor extends LinearOpMode {
     private ElapsedTime runtime = new ElapsedTime();
 
     static final double COUNTS_PER_MOTOR_REV = 1440;    // eg: TETRIX Motor Encoder
-    static final double DRIVE_GEAR_REDUCTION = 60.0;     // This is < 1.0 if geared UP
+    static final double DRIVE_GEAR_REDUCTION = 1.0;     // This is < 1.0 if geared UP
     static final double WHEEL_DIAMETER_INCHES = 4.0;     // For figuring circumference
     static final double COUNTS_PER_INCH = (COUNTS_PER_MOTOR_REV * DRIVE_GEAR_REDUCTION) /
             (WHEEL_DIAMETER_INCHES * 3.1415);
@@ -94,20 +89,6 @@ public class CraterSideAutonomousWithColorSensor extends LinearOpMode {
     static final double TURN_SPEED = 0.5;
     static final double ARM_SPEED = 0.5;
 
-    //int Blue = Color_Sensor.blue();
-    //int Red = Color_Sensor.red();
-    //int Green = Color_Sensor.green();
-
-
-    // hsvValues is an array that will hold the hue, saturation, and value information.
-    float hsvValues[] = {0F, 0F, 0F};
-
-    // values is a reference to the hsvValues array.
-    final float values[] = hsvValues;
-
-    // sometimes it helps to multiply the raw RGB values with a scale factor
-    // to amplify/attentuate the measured values.
-    final double SCALE_FACTOR = 255;
 
 
     @Override
@@ -161,174 +142,85 @@ public class CraterSideAutonomousWithColorSensor extends LinearOpMode {
 
 
         // Wait for the game to start (driver presses PLAY)
-        waitForStart();
-
-        // Color Sensor Stuff-----------------------------------------------------------------------
-        while (opModeIsActive()) {
-            // convert the RGB values to HSV values.
-            // multiply by the SCALE_FACTOR.
-            // then cast it back to int (SCALE_FACTOR is a double)
-
-            Color.RGBToHSV((int) (Color_Sensor.red() * SCALE_FACTOR),
-                    (int) (Color_Sensor.green() * SCALE_FACTOR),
-                    (int) (Color_Sensor.blue() * SCALE_FACTOR),
-                    hsvValues);
-
-            // send the info back to driver station using telemetry function.
-            telemetry.addData("Distance (cm)",
-                    String.format(Locale.US, "%.02f", Distance_Sensor.getDistance(DistanceUnit.CM)));
-            telemetry.addData("Alpha", Color_Sensor.alpha());
-            telemetry.addData("Red  ", Color_Sensor.red());
-            telemetry.addData("Green", Color_Sensor.green());
-            telemetry.addData("Blue ", Color_Sensor.blue());
-            telemetry.addData("Hue", hsvValues[0]);
+        waitForStart();{
 
 
-            telemetry.update();
-            int step = 0;
 
-            switch (step) {
-                case 0:
                     //
                     // Lower the Claw
                     //
-                    encoderArmExtend(1,1,1);
-                    step ++;
-                    break;
+                    encoderArmExtend(1,0,1);
 
-                case 1:
+
+
                     //
                     //Unfold the robot
                     //
-                    encoderArmRaise(1,1,1);
-                    step ++;
-                    break;
-                case 2:
+                    encoderArmRaise(1,0,1);
+
                     //
                     //Release the pin
                     //
                     robot.Robot_Release.setPosition(0);
-                    step ++;
-                    break;
-                case 11:
+
                     //
                     //fold the arm down
                     //
-                    encoderArmRaise(1,1,1);
-                    step ++;
-                    break;
-                case 3:
+                    encoderArmRaise(1,0,1);
+
                     //
                     // drive away form lander
                     //
                     encoderDrive(1,20,20,15);
-                    step ++;
-                    break;
-                case 4:
+
                     //
                     //turn left for block reading positioning
                     //
-                    encoderDrive(1,-5,5,15);
-                    step ++;
-                    break;
-                case 5:
+                    encoderDrive(1,-15,15,15);
+
                     //
                     // drive backwards positioning for block reading
                     //
-                    encoderDrive(1,-25,-25,15);
+                    encoderDrive(1,-24,-24,15);
 
-                    step ++;
-                    break;
 
-                case 6:
                     //
                     // read blocks
                     //
                     encoderDrive(1,70,70,15);
 
-                    step ++;
-                    break;
-                case 7:
+
                     //
                     // turn left towards marker area
                     //
-                    encoderDrive(1,-5,5,15);
+                    encoderDrive(1,-7,7,15);
 
-                    step ++;
-                    break;
-                case 8:
+
                     //
                     // Drive into marker area
                     //
-                    encoderDrive(1,61,61,15);
+                    encoderDrive(1,60,60,15);
 
-                    step ++;
-                    break;
 
-                case 9:
                     //
                     // release marker
                     //
                     robot.Scoop_Servo.setPosition(0);
 
-                    step ++;
-                    break;
 
-                case 10:
                     //
                     // back out of marker spot
                     //
                     encoderDrive(1,-18,-18,15);
 
-                    step ++;
-
-
-                    break;
-
-                    
-
-                 default:
-                     //
-                     //Done
-                     //
-            }
-            stop();
+                    stop();
         }
 
     }
 
 
-        // A bunch of code that needs to go in the steps
-        //encoderDrive(1, 6, 6, 10);
 
 
-        // Step through each leg of the path,
-        // Note: Reverse movement is obtained by setting a negative distance (not speed)
-
-        /*
-        encoderArmExtend(ARM_SPEED,  20, 10);
-        robot.Robot_Open.setPosition(1);
-        encoderArmExtend(ARM_SPEED,  1, 10);
-        sleep(200);
-        robot.Robot_Release.setPosition(0);
-        encoderArmRaise(ARM_SPEED, 1, 5);
-        encoderArmRaise(ARM_SPEED, -2, 10);
-        encoderDrive(DRIVE_SPEED,  15,  15, 10.0);
-        */
-        //ColorSensor
-
-
-        //encoderDrive(DRIVE_SPEED, -2, 2, 3);
-        /*
-        encoderDrive(DRIVE_SPEED,  -12,  -12, 10.0);
-        encoderDrive(DRIVE_SPEED,  -12,  12, 10.0);
-        encoderDrive(DRIVE_SPEED,  50,  50, 15.0);
-        encoderDrive(DRIVE_SPEED,  -4,  -4, 15.0);
-        encoderDrive(DRIVE_SPEED,  42,  42, 15.0);
-        robot.Scoop_Servo.setPosition(1);
-        encoderDrive(DRIVE_SPEED,  -60,  -60, 15.0);
-        robot.Scoop_Servo.setPosition(0);
-        */
 
 
         /*

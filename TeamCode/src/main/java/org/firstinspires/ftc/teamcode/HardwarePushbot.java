@@ -69,8 +69,6 @@ public class HardwarePushbot
     public CRServo Scoop_Spin_Left = null;
     public CRServo Scoop_Spin_Right = null;
 
-    public ColorSensor Color_Sensor ;
-    public DistanceSensor Distance_Sensor;
 
     public static final double MID_SERVO       =  0.5 ;
     public static final double ARM_UP_POWER    =  0.45 ;
@@ -124,8 +122,7 @@ public class HardwarePushbot
         Scoop_Spin_Left = hwMap.get(CRServo.class, "Left_Side_Scoop");
         Scoop_Spin_Right = hwMap.get(CRServo.class, "Right_Side_Scoop");
 
-        Color_Sensor = hwMap.get(ColorSensor.class, "Sensor_Color_Distance");
-        Distance_Sensor = hwMap.get (DistanceSensor.class, " Sensor_Color_Distance");
+
 
 
 
